@@ -1,0 +1,219 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-arch: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Readable body scale: keep the editorial display type, raise utility copy. */
+  --text-xs: 0.875rem;
+  --text-xs--line-height: 1.375rem;
+  --text-sm: 1rem;
+  --text-sm--line-height: 1.5rem;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.625rem;
+
+  --color-ink: #0a0b0c;
+  --color-panel: #101214;
+  --color-panel2: #171a1d;
+  --color-bone: #e9ebe3;
+  --color-mute: #868b82;
+  --color-dim: #4d514a;
+  --color-lime: #c6ff4a;
+  --color-ember: #ff6b57;
+  --color-ice: #7fd7ff;
+  --color-amber: #ffb35c;
+  --color-line: rgba(233, 235, 227, 0.09);
+
+  --animate-marquee: marquee 28s linear infinite;
+  --animate-marquee-slow: marquee 60s linear infinite;
+  --animate-spin-slow: spin-slow 14s linear infinite;
+  --animate-blink: blink 1.1s steps(2, start) infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes blink {
+    to { visibility: hidden; }
+  }
+}
+
+html {
+  background: var(--color-ink);
+  scroll-behavior: auto;
+}
+
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* authoritative lock used by overlays/modals (see lib/scroll.ts)
+   NOTE: never set height/position here — that would drop the scroll offset */
+html.is-locked, html.is-locked body {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
+.overlay-scroll {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scanline {
+  animation: scan 2.6s linear infinite;
+}
+@keyframes scan {
+  0% { top: -14%; }
+  100% { top: 108%; }
+}
+
+.flicker {
+  animation: flicker 5.5s steps(1) infinite;
+}
+@keyframes flicker {
+  0%, 92%, 100% { opacity: 1; }
+  93% { opacity: 0.42; }
+  94% { opacity: 1; }
+  96% { opacity: 0.6; }
+  97% { opacity: 1; }
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-bone);
+  font-family: var(--font-arch);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* The original interface used 8–13px for most labels. Raise those sizes
+   globally so navigation, captions and dashboard metadata stay readable. */
+[class~="text-[8px]"] { font-size: 0.625rem !important; line-height: 1.3 !important; }
+[class~="text-[9px]"] { font-size: 0.75rem !important; line-height: 1.35 !important; }
+[class~="text-[10px]"] { font-size: 0.8125rem !important; line-height: 1.4 !important; }
+[class~="text-[11px]"] { font-size: 0.8125rem !important; line-height: 1.4 !important; }
+[class~="text-[12px]"] { font-size: 0.875rem !important; line-height: 1.45 !important; }
+[class~="text-[13px]"] { font-size: 0.9375rem !important; line-height: 1.5 !important; }
+
+@media (min-width: 40rem) {
+  [class~="sm:text-[10px]"] { font-size: 0.8125rem !important; }
+}
+
+@media (min-width: 48rem) {
+  [class~="md:text-[9px]"] { font-size: 0.75rem !important; }
+  [class~="md:text-[13px]"] { font-size: 0.9375rem !important; }
+}
+
+::selection {
+  background: var(--color-lime);
+  color: var(--color-ink);
+}
+
+/* hide the native cursor on precise pointers — the custom cursor replaces it */
+@media (pointer: fine) {
+  * { cursor: none !important; }
+}
+
+/* ---------- utilities ---------- */
+
+.font-expanded {
+  font-stretch: 118%;
+}
+.font-condensed {
+  font-stretch: 76%;
+}
+
+.text-stroke {
+  -webkit-text-stroke: 1px rgba(233, 235, 227, 0.32);
+  color: transparent;
+}
+.text-stroke-lime {
+  -webkit-text-stroke: 1.5px var(--color-lime);
+  color: transparent;
+}
+
+.noise::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  z-index: 90;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  animation: grain 9s steps(10) infinite;
+}
+
+/* touch / low-end: skip the continuously repainting grain overlay */
+@media (pointer: coarse) {
+  .noise::after { display: none !important; }
+}
+
+/* accessibility: respect reduced-motion — drop decorative animation */
+@media (prefers-reduced-motion: reduce) {
+  .noise::after,
+  .scanline,
+  .flicker {
+    animation: none !important;
+  }
+  .animate-marquee,
+  .animate-marquee-slow,
+  .animate-spin-slow {
+    animation: none !important;
+  }
+}
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-3%, -6%); }
+  30% { transform: translate(4%, 3%); }
+  50% { transform: translate(-4%, 6%); }
+  70% { transform: translate(6%, -2%); }
+  90% { transform: translate(-2%, 4%); }
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(233, 235, 227, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(233, 235, 227, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+.mask-fade-x {
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+}
+
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+@media (pointer: coarse) {
+  .cursor-el { display: none !important; }
+  .logo-mark-orbit { animation: none !important; }
+}
